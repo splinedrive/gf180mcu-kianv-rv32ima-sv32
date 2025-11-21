@@ -181,23 +181,63 @@ if { $::env(PDN_CORE_RING) == 1 } {
         throw APPLICATION "PDN_CORE_RING cannot be used when PDN_MULTILAYER is set to false."
     }
 }
+# =====================================================================
+#  SRAM-MACROS N / S / W / E
+# =====================================================================
+
+# -------- TOP (N) – 5 × I$ way0 --------
+set sram_N {
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_0.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_1.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_2.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_3.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_4.u_prim
+}
+
+# -------- BOTTOM (S) – 1 × D$ + 3 × I$ way1 --------
+set sram_S {
+    i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_0.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_6.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_5.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_4.u_prim
+}
+
+# -------- WEST (W) – 6 × D$ --------
+set sram_W {
+    i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_1.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_2.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_3.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_4.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_5.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_6.u_prim
+}
+
+# -------- EAST (E) – 4 × I$ way1 + 2 × I$ way0 --------
+set sram_E {
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_3.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_2.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_1.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_0.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_6.u_prim
+    i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_5.u_prim
+}
+
+puts "SRAM Nord (N):"
+puts $sram_N
+puts "\nSRAM Süd  (S):"
+puts $sram_S
+puts "\nSRAM West (W):"
+puts $sram_W
+puts "\nSRAM Ost  (E):"
+puts $sram_E
+
+# =====================================================================
+#  PDN-GRID NORTH + SOUTH
+# =====================================================================
 
 define_pdn_grid \
     -macro \
-    -default \
-    -name macro \
-    -starts_with POWER \
-    -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
-
-add_pdn_connect \
-    -grid macro \
-    -layers "$::env(PDN_VERTICAL_LAYER) $::env(PDN_HORIZONTAL_LAYER)"
-
-# SRAM macros
-
-define_pdn_grid \
-    -macro \
-    -instances i_chip_core.sram_0 \
+    -instances "$sram_N $sram_S" \
     -name sram_macros_NS \
     -starts_with POWER \
     -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
@@ -210,11 +250,23 @@ add_pdn_connect \
     -grid sram_macros_NS \
     -layers "$::env(PDN_VERTICAL_LAYER) Metal3"
 
-add_pdn_stripe -grid sram_macros_NS -layer Metal4 -width 2.36 -offset 1.18 -spacing 0.28 -pitch 426.86 -starts_with GROUND -number_of_straps 2
+add_pdn_stripe \
+    -grid sram_macros_NS \
+    -layer Metal4 \
+    -width 2.36 \
+    -offset 1.18 \
+    -spacing 0.28 \
+    -pitch 426.86 \
+    -starts_with GROUND \
+    -number_of_straps 2
+
+# =====================================================================
+#  PDN-GRID WEST + EAST
+# =====================================================================
 
 define_pdn_grid \
     -macro \
-    -instances i_chip_core.sram_1 \
+    -instances "$sram_W $sram_E" \
     -name sram_macros_WE \
     -starts_with POWER \
     -halo "$::env(PDN_HORIZONTAL_HALO) $::env(PDN_VERTICAL_HALO)"
@@ -227,4 +279,13 @@ add_pdn_connect \
     -grid sram_macros_WE \
     -layers "$::env(PDN_VERTICAL_LAYER) Metal3"
 
-add_pdn_stripe -grid sram_macros_WE -layer Metal4 -width 2.36 -offset 1.18 -spacing 0.28 -pitch 479.88 -starts_with GROUND -number_of_straps 2
+add_pdn_stripe \
+    -grid sram_macros_WE \
+    -layer Metal4 \
+    -width 2.36 \
+    -offset 1.18 \
+    -spacing 0.28 \
+    -pitch 479.88 \
+    -starts_with GROUND \
+    -number_of_straps 2
+

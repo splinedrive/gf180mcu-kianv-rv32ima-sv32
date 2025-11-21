@@ -26,8 +26,80 @@ meta:
 
 DESIGN_NAME: chip_top
 VERILOG_FILES:
-- dir::../src/chip_top.sv
-- dir::../src/chip_core.sv
+  # === Chip-level integration ===
+  - dir::../src/chip_core.sv
+  - dir::../src/chip_top.sv
+
+  # === SoC system ===
+  - dir::../src/cache.v
+  - dir::../src/cache_sram_D$.v
+  - dir::../src/cache_sram_I$.v
+  - dir::../src/clint.v
+  - dir::../src/dcache.v
+  - dir::../src/fifo.v
+  - dir::../src/gf180mcu_fd_ip_sram__sram512x8m8wm1_wrapper.v
+  - dir::../src/gpio.v
+  - dir::../src/icache.v
+  - dir::../src/plic.v
+  - dir::../src/rx_uart.v
+  - dir::../src/sdram/mt48lc16m16a2_ctrl.v
+  - dir::../src/soc.v
+  - dir::../src/spi.v
+  - dir::../src/spi_nor_flash.v
+  - dir::../src/sram_sp.v
+  - dir::../src/sram_sp_gf180_512x56.v
+  - dir::../src/tx_uart.v
+#
+  # === KianV core ===
+  - dir::../src/kianv_harris_edition/alu.v
+  - dir::../src/kianv_harris_edition/alu_decoder.v
+  - dir::../src/kianv_harris_edition/associative_cache.v
+  - dir::../src/kianv_harris_edition/control_unit.v
+  - dir::../src/kianv_harris_edition/csr_decoder.v
+  - dir::../src/kianv_harris_edition/csr_exception_handler.v
+  - dir::../src/kianv_harris_edition/csr_unit.v
+  - dir::../src/kianv_harris_edition/datapath_unit.v
+  - dir::../src/kianv_harris_edition/design_elements.v
+  - dir::../src/kianv_harris_edition/design_elements_fpgacpu_ca.v
+  - dir::../src/kianv_harris_edition/divider.v
+  - dir::../src/kianv_harris_edition/divider_decoder.v
+  - dir::../src/kianv_harris_edition/extend.v
+  - dir::../src/kianv_harris_edition/interrupt_controller.v
+  - dir::../src/kianv_harris_edition/kianv_harris_mc_edition.v
+  - dir::../src/kianv_harris_edition/load_alignment.v
+  - dir::../src/kianv_harris_edition/load_decoder.v
+  - dir::../src/kianv_harris_edition/main_fsm.v
+  - dir::../src/kianv_harris_edition/multiplier.v
+  - dir::../src/kianv_harris_edition/multiplier_decoder.v
+  - dir::../src/kianv_harris_edition/multiplier_extension_decoder.v
+  - dir::../src/kianv_harris_edition/register_file.v
+  - dir::../src/kianv_harris_edition/store_alignment.v
+  - dir::../src/kianv_harris_edition/store_decoder.v
+  - dir::../src/kianv_harris_edition/sv32.v
+  - dir::../src/kianv_harris_edition/sv32_table_walk.v
+  - dir::../src/kianv_harris_edition/sv32_translate_data_to_physical.v
+  - dir::../src/kianv_harris_edition/sv32_translate_instruction_to_physical.v
+
+#SYNTH_HIERARCHY_MODE: flatten
+#SYNTH_KEEP_HIERARCHY_MIN_COST: 1000
+
+SYNTH_STRATEGY: "DELAY 4"
+#SYNTH_EXCLUDED_CELL_FILE: dir::synth_exclude.cells
+
+VERILOG_DEFINES:
+  - "SYSTEM_CLK=20000000"
+  - "TRP_NS=15"
+  - "TRCD_NS=15"
+  - "TRFC_NS=66"
+  - "TWR_NS=15"
+  - "CAS=2"
+  - "TREFI_NS=7800"
+  - "SDRAM_SIZE=33554432"
+  - "NUM_ENTRIES_ITLB=32"
+  - "NUM_ENTRIES_DTLB=32"
+  - "SYNTHESIS"
+  - "GF180"
+  - "BYPASS_CACHES=1'b0"
 
 # Enable plugin for better SystemVerilog support
 # USE_SLANG: True
@@ -69,18 +141,18 @@ PAD_EAST: [
     "bidir\\[17\\].pad",
     "bidir\\[18\\].pad",
     "bidir\\[19\\].pad",
-    
+
     "dvdd_pads\\[1\\].pad",
     "dvss_pads\\[2\\].pad",
 
-    
+
     "bidir\\[20\\].pad",
     "bidir\\[21\\].pad",
     "bidir\\[22\\].pad",
     "bidir\\[23\\].pad",
     "bidir\\[24\\].pad",
     "bidir\\[25\\].pad",
-    
+
     "dvss_pads\\[3\\].pad",
     "dvdd_pads\\[2\\].pad",
     "dvss_pads\\[4\\].pad",
@@ -88,8 +160,6 @@ PAD_EAST: [
 ]
 
 PAD_NORTH: [
-    "analog\\[1\\].pad",
-    "analog\\[0\\].pad",
     "bidir\\[39\\].pad",
     "bidir\\[38\\].pad",
     "bidir\\[37\\].pad",
@@ -109,33 +179,35 @@ PAD_NORTH: [
     "bidir\\[26\\].pad"
 ]
 
-
 PAD_WEST: [
     "dvdd_pads\\[7\\].pad",
     "dvss_pads\\[9\\].pad",
     "dvdd_pads\\[6\\].pad",
     "dvss_pads\\[8\\].pad",
 
-    "inputs\\[11\\].pad",
-    "inputs\\[10\\].pad",
-    "inputs\\[9\\].pad",
-    "inputs\\[8\\].pad",
-    "inputs\\[7\\].pad",
-    "inputs\\[6\\].pad",
+    "bidir\\[53\\].pad",
+    "bidir\\[52\\].pad",
+    "bidir\\[51\\].pad",
+    "bidir\\[50\\].pad",
+    "bidir\\[49\\].pad",
+    "bidir\\[48\\].pad",
 
     "dvdd_pads\\[5\\].pad",
     "dvss_pads\\[7\\].pad",
 
-    "inputs\\[5\\].pad",
-    "inputs\\[4\\].pad",
-    "inputs\\[3\\].pad",
-    "inputs\\[2\\].pad",
+    "bidir\\[47\\].pad",
+    "bidir\\[46\\].pad",
+    "bidir\\[45\\].pad",
+    "bidir\\[44\\].pad",
 
     "dvdd_pads\\[4\\].pad",
     "dvss_pads\\[6\\].pad",
-    
-    "inputs\\[1\\].pad",
-    "inputs\\[0\\].pad"
+
+    "bidir\\[43\\].pad",
+    "bidir\\[42\\].pad",
+
+    "bidir\\[41\\].pad",
+    "bidir\\[40\\].pad"
 ]
 
 # SDC files
@@ -159,11 +231,59 @@ IGNORE_DISCONNECTED_MODULES:
 # Clock
 CLOCK_PORT: clk_PAD
 CLOCK_NET: clk_pad/Y
-CLOCK_PERIOD: 40 # 25 MHz
+
+#CLOCK_PERIOD: 62
+CLOCK_PERIOD: 50
+
+# Technology libs
+LIB:
+  "*_tt_025C_3v30":
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__tt_025C_3v30.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__tt_025C_5v00.lib
+  "*_ss_n40C_3v00":
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_n40C_3v00.lib
+    # There is no lib for n40C
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ss_125C_2v97.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ss_125C_4v50.lib
+  "*_ss_125C_3v00":
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_3v00.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ss_125C_2v97.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ss_125C_4v50.lib
+  "*_ff_n40C_3v60":
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_n40C_3v60.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_n40C_3v63.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ff_n40C_5v50.lib
+  "*_ff_125C_3v60":
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_125C_3v60.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_125C_3v63.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ff_n40C_5v50.lib
+
+# Corners
+STA_CORNERS:
+  - nom_tt_025C_3v30
+  - nom_ss_n40C_3v00
+  - nom_ss_125C_3v00
+  - nom_ff_n40C_3v60
+  - nom_ff_125C_3v60
+  - min_tt_025C_3v30
+  - min_ss_n40C_3v00
+  - min_ss_125C_3v00
+  - min_ff_n40C_3v60
+  - min_ff_125C_3v60
+  - max_tt_025C_3v30
+  - max_ss_n40C_3v00
+  - max_ss_125C_3v00
+  - max_ff_n40C_3v60
+  - max_ff_125C_3v60
+
+CLOCK_PERIOD: 50 # 20 MHz
 
 # Fix hold violations
 PL_RESIZER_HOLD_SLACK_MARGIN: 0.2
 GRT_RESIZER_HOLD_SLACK_MARGIN: 0.1
+
+DEFAULT_CORNER: nom_tt_025C_3v30
 
 # Floorplanning
 FP_SIZING: absolute
@@ -174,12 +294,20 @@ CORE_AREA: [442, 442, 3490, 4680]
 
 # Increase for more logic
 # on your die
-PL_TARGET_DENSITY_PCT: 35
+#PL_TARGET_DENSITY_PCT: 25
+#GRT_ALLOW_CONGESTION: true
+# Increase for more logic
+# on your die
+
+PL_TARGET_DENSITY_PCT: 30
+
 GRT_ALLOW_CONGESTION: true
 
 # Fix antenna violations after DRT
 DRT_ANTENNA_REPAIR_ITERS: 10
 DRT_ANTENNA_MARGIN: 10 # %
+PL_MAX_DISPLACEMENT_X: 800
+PL_MAX_DISPLACEMENT_Y: 500
 
 # PDN - Straps
 PDN_VWIDTH: 5
@@ -208,7 +336,7 @@ PDN_CORE_HORIZONTAL_LAYER: Metal3
 MAGIC_GDS_FLATGLOB:
 # For contacts
 - "*_CDNS_*"
-# COMP and Poly2 filler cells need to be 
+# COMP and Poly2 filler cells need to be
 # flattened to form a "filltrans" layer
 - "COMP_fill_cell"
 - "Poly2_fill_cell"
@@ -282,28 +410,103 @@ MACROS:
     vh:
       - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram512x8m8wm1__blackbox.v
     lib:
+      # 5V
       "*_tt_025C_5v00":
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_5v00.lib
       "*_ff_n40C_5v50":
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ff_n40C_5v50.lib
       "*_ss_125C_4v50":
         - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_4v50.lib
+      # 3.3V
+      "*_tt_025C_3v30":
+        - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_3v30.lib
+      "*_ss_n40C_3v00":
+        - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_n40C_3v00.lib
+      "*_ss_125C_3v00":
+        - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_3v00.lib
+      "*_ff_n40C_3v60":
+        - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ff_n40C_3v60.lib
+      "*_ff_125C_3v60":
+        - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ff_125C_3v60.lib
     instances:
-      # Make sure to specify the SRAMs in pdn_cfg.tcl
-      i_chip_core.sram_0:
-        location: [500, 500]
+      # -------- TOP (N) – 5× way0 --------
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_0.u_prim":
+        location: [642, 4175]
         orientation: N
-      i_chip_core.sram_1:
-        location: [1000, 500]
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_1.u_prim":
+        location: [1221, 4175]
+        orientation: N
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_2.u_prim":
+        location: [1800, 4175]
+        orientation: N
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_3.u_prim":
+        location: [2379, 4175]
+        orientation: N
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_4.u_prim":
+        location: [2958, 4175]
+        orientation: N
+
+      # -------- RIGHT (E) --------
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_3.u_prim":
+        location: [2950, 1135]
         orientation: E
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_2.u_prim":
+        location: [2950, 1620]
+        orientation: E
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_1.u_prim":
+        location: [2950, 2105]
+        orientation: E
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_0.u_prim":
+        location: [2950, 2590]
+        orientation: E
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_6.u_prim":
+        location: [2950, 3075]
+        orientation: E
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way0.u_tile_5.u_prim":
+        location: [2950, 3560]
+        orientation: E
+
+      # -------- BOTTOM (S) --------
+      "i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_0.u_prim":
+        location: [842, 462]
+        orientation: S
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_6.u_prim":
+        location: [1421, 462]
+        orientation: S
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_5.u_prim":
+        location: [2000, 462]
+        orientation: S
+      "i_chip_core.u_soc.cache_I.gen_cached.icache_I.cache_I.u_mem_way1.u_tile_4.u_prim":
+        location: [2579, 462]
+        orientation: S
+
+      # -------- LEFT (W) --------
+      "i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_1.u_prim":
+        location: [462, 1135]
+        orientation: W
+      "i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_2.u_prim":
+        location: [462, 1620]
+        orientation: W
+      "i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_3.u_prim":
+        location: [462, 2105]
+        orientation: W
+      "i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_4.u_prim":
+        location: [462, 2590]
+        orientation: W
+      "i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_5.u_prim":
+        location: [462, 3075]
+        orientation: W
+      "i_chip_core.u_soc.cache_I.gen_cached.dcache_I.cache_D.u_mem.u_tile_6.u_prim":
+        location: [462, 3560]
+        orientation: W
 
 # This is an alternative method compared to
 # specifying the power connections in the RTL
-PDN_MACRO_CONNECTIONS:
-- "i_chip_core.sram_0 VDD VSS VDD VSS"
-- "i_chip_core.sram_1 VDD VSS VDD VSS"
+#PDN_MACRO_CONNECTIONS:
+#- "i_chip_core.sram_0 VDD VSS VDD VSS"
+#- "i_chip_core.sram_1 VDD VSS VDD VSS"
 
-# Halo size around macros while cutting rows.
+ Halo size around macros while cutting rows.
 # Workaround for: https://github.com/The-OpenROAD-Project/OpenROAD/issues/8868
 FP_MACRO_HORIZONTAL_HALO: 10
 FP_MACRO_VERTICAL_HALO: 10
