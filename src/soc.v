@@ -234,21 +234,6 @@ module soc #(
       .cfg_done   (sdram_cfg_done_w_hw)
   );
 
-`ifdef USE_SIM_MEM_MODEL
-
-  assign sdram_clk   = clk;
-  assign sdram_cke   = 1'b0;
-  assign sdram_dqm   = 2'b00;
-  assign sdram_addr  = 13'h0;
-  assign sdram_ba    = 2'b00;
-  assign sdram_csn   = 1'b1;
-  assign sdram_wen   = 1'b1;
-  assign sdram_rasn  = 1'b1;
-  assign sdram_casn  = 1'b1;
-  assign sdram_dq_oe = 1'b0;
-  assign sdram_dq_out= 16'h0000;
-`endif
-
   wire        spi_nor_ready;
   wire [31:0] spi_nor_rdata;
 
