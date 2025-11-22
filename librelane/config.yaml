@@ -83,7 +83,7 @@ VERILOG_FILES:
 #SYNTH_HIERARCHY_MODE: flatten
 #SYNTH_KEEP_HIERARCHY_MIN_COST: 1000
 
-SYNTH_STRATEGY: "DELAY 4"
+SYNTH_STRATEGY: "AREA 3"
 #SYNTH_EXCLUDED_CELL_FILE: dir::synth_exclude.cells
 
 VERILOG_DEFINES:
@@ -235,31 +235,39 @@ CLOCK_PORT: clk_PAD
 CLOCK_NET: clk_pad/Y
 
 #CLOCK_PERIOD: 62
-CLOCK_PERIOD: 50
+#CLOCK_PERIOD: 50
+CLOCK_PERIOD: 33 # 30 MHz
+
+STD_CELL_LIBRARY: gf180mcu_fd_sc_mcu9t5v0
+
 
 # Technology libs
 LIB:
   "*_tt_025C_3v30":
-    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__tt_025C_3v30.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__tt_025C_3v30.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__tt_025C_3v30.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__tt_025C_5v00.lib
+
   "*_ss_n40C_3v00":
-    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_n40C_3v00.lib
-    # There is no lib for n40C
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ss_n40C_3v00.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ss_125C_2v97.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ss_125C_4v50.lib
+
   "*_ss_125C_3v00":
-    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ss_125C_3v00.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ss_125C_3v00.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ss_125C_2v97.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ss_125C_4v50.lib
+
   "*_ff_n40C_3v60":
-    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_n40C_3v60.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ff_n40C_3v60.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_n40C_3v63.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ff_n40C_5v50.lib
+
   "*_ff_125C_3v60":
-    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu7t5v0/lib/gf180mcu_fd_sc_mcu7t5v0__ff_125C_3v60.lib
+    - pdk_dir::libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ff_125C_3v60.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_125C_3v63.lib
     - pdk_dir::libs.ref/gf180mcu_fd_io/lib/gf180mcu_ws_io__ff_n40C_5v50.lib
+
 
 # Corners
 STA_CORNERS:
@@ -279,14 +287,12 @@ STA_CORNERS:
   - max_ff_n40C_3v60
   - max_ff_125C_3v60
 
-CLOCK_PERIOD: 50 # 20 MHz
-
 CTS_CLK_BUFFERS:
-  - "gf180mcu_fd_sc_mcu7t5v0__clkbuf_16"
+  - "gf180mcu_fd_sc_mcu9t5v0__clkbuf_16"
 
 # Fix hold violations
-PL_RESIZER_HOLD_SLACK_MARGIN: 0.5
-GRT_RESIZER_HOLD_SLACK_MARGIN: 0.4
+PL_RESIZER_HOLD_SLACK_MARGIN: 0.6
+GRT_RESIZER_HOLD_SLACK_MARGIN: 0.5
 
 DEFAULT_CORNER: nom_tt_025C_3v30
 
