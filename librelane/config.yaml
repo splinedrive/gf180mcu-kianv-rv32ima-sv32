@@ -227,6 +227,8 @@ IGNORE_DISCONNECTED_MODULES:
 - gf180mcu_fd_io__bi_24t
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
+- gf180mcu_ws_ip__names
+- gf180mcu_ws_ip__credits
 
 # Clock
 CLOCK_PORT: clk_PAD
@@ -402,6 +404,36 @@ MACROS:
         location: [3762.75, 4952.75]
         orientation: N
 
+  gf180mcu_ws_ip__names:
+    gds:
+      - dir::../ip/gf180mcu_ws_ip__names/gds/gf180mcu_ws_ip__names.gds
+    lef:
+      - dir::../ip/gf180mcu_ws_ip__names/lef/gf180mcu_ws_ip__names.lef
+    vh:
+      - dir::../ip/gf180mcu_ws_ip__names/vh/gf180mcu_ws_ip__names.v
+    lib:
+      "*":
+        - dir::../ip/gf180mcu_ws_ip__names/lib/gf180mcu_ws_ip__names.lib
+    instances:
+      names:
+        location: [3762.75, 26]
+        orientation: N
+
+  gf180mcu_ws_ip__credits:
+    gds:
+      - dir::../ip/gf180mcu_ws_ip__credits/gds/gf180mcu_ws_ip__credits.gds
+    lef:
+      - dir::../ip/gf180mcu_ws_ip__credits/lef/gf180mcu_ws_ip__credits.lef
+    vh:
+      - dir::../ip/gf180mcu_ws_ip__credits/vh/gf180mcu_ws_ip__credits.v
+    lib:
+      "*":
+        - dir::../ip/gf180mcu_ws_ip__credits/lib/gf180mcu_ws_ip__credits.lib
+    instances:
+      credits:
+        location: [26, 4952.75]
+        orientation: N
+
   gf180mcu_fd_ip_sram__sram512x8m8wm1:
     gds:
       - pdk_dir::libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram512x8m8wm1.gds
@@ -514,9 +546,13 @@ PDN_CFG: dir::pdn_cfg.tcl
 LVS_FLATTEN_CELLS:
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
+- gf180mcu_ws_ip__names
+- gf180mcu_ws_ip__credits
 
 # gf180mcu_ws_ip__id/logo has no ports and components
 # therefore make it an abstract cell in the layout
 MAGIC_EXT_ABSTRACT_CELLS:
 - gf180mcu_ws_ip__id
 - gf180mcu_ws_ip__logo
+- gf180mcu_ws_ip__names
+- gf180mcu_ws_ip__credits
