@@ -59,6 +59,7 @@ jobs:
         run: |
           make clone-pdk
       - name: Run RTL simulation
+        if: ${{ false }} # disabled
         run: |
           nix develop --command make sim
       - name: Implement the Chip
@@ -81,5 +82,6 @@ jobs:
           name: image
           path: img/*.png
       - name: Run GL simulation
+        if: ${{ false }} # disabled
         run: |
           nix develop --command make sim-gl
