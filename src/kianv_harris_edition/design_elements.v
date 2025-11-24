@@ -158,3 +158,33 @@ module counter #(
 
 endmodule
 
+module async_reset_sync (
+    input  wire clk,
+    input  wire rst_n_async,
+    output wire rst_n_sync
+);
+  (* async_reg = "true" *) reg [1:0] ff;
+
+  always @(posedge clk or negedge rst_n_async) begin
+    if (!rst_n_async) ff <= 2'b00;
+    else ff <= {ff[0], 1'b1};
+  end
+
+  assign rst_n_sync = ff[1];
+endmodule
+
+module sync_2ff (
+    input  wire clk,
+    input  wire d_async,
+    output wire q_sync
+);
+  (* async_reg = "true" *) reg [1:0] ff;
+
+  always @(posedge clk) begin
+    ff <= {ff[0], d_async};
+  end
+
+  assign q_sync = ff[1];
+
+endmodule
+

@@ -68,14 +68,15 @@ module soc #(
 
   wire clk = clk_osc;
 
-  (* async_reg="true" *) reg [1:0] sh;
-  always @(posedge clk) begin
-    if (!ext_resetn) sh <= 2'b00;
-    else sh <= {sh[0], 1'b1};
-  end
-  wire ext_resetn_sync = sh[1];
+  wire ext_resetn_sync;
 
-  localparam integer RST_CYCLES = 200_000;
+  sync_2ff u_sync_2ff (
+      .clk    (clk),
+      .d_async(ext_resetn),
+      .q_sync (ext_resetn_sync)
+  );
+
+  localparam integer RST_CYCLES = 333_333;
   localparam integer RSTW = $clog2(RST_CYCLES);
   reg  [RSTW-1:0] rst_cnt;
   wire            rst_done = (rst_cnt == RST_CYCLES - 1);

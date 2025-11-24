@@ -4,13 +4,11 @@ set_units -time ns
 set clock_port __VIRTUAL_CLK__
 if { [info exists ::env(CLOCK_PORT)] } {
     set port_count [llength $::env(CLOCK_PORT)]
-
     if { $port_count == "0" } {
         puts "\[WARNING] No CLOCK_PORT found. A dummy clock will be used."
     } elseif { $port_count != "1" } {
         puts "\[WARNING] Multi-clock files are not currently supported by the base SDC file. Only the first clock will be constrained."
     }
-
     if { $port_count > "0" } {
         set ::clock_port [lindex $::env(CLOCK_PORT) 0]
     }
@@ -28,34 +26,38 @@ create_clock {*}$port_args -name $clock_port -period $::env(CLOCK_PERIOD)
 
 set input_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
 set output_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_DELAY_CONSTRAINT) / 100]
+
 puts "\[INFO] Setting output delay to: $output_delay_value"
 puts "\[INFO] Setting input delay to: $input_delay_value"
 
 set_max_fanout $::env(MAX_FANOUT_CONSTRAINT) [current_design]
+
 if { [info exists ::env(MAX_TRANSITION_CONSTRAINT)] } {
     set_max_transition $::env(MAX_TRANSITION_CONSTRAINT) [current_design]
 }
+
 if { [info exists ::env(MAX_CAPACITANCE_CONSTRAINT)] } {
     set_max_capacitance $::env(MAX_CAPACITANCE_CONSTRAINT) [current_design]
 }
 
 set clocks [get_clocks $clock_port]
 
-# Bidirectional pads
-set clk_core_inout_ports [get_ports { 
-    bidir_PAD[*]
-}] 
+# Asynchronous reset has no timing requirement
+set_false_path -from [get_ports rst_n_PAD]
 
+# Bidirectional pads
+set clk_core_inout_ports [get_ports {
+    bidir_PAD[*]
+}]
 set_input_delay -min 0 -clock $clocks $clk_core_inout_ports
 set_input_delay -max $input_delay_value -clock $clocks $clk_core_inout_ports
 set_output_delay $output_delay_value -clock $clocks $clk_core_inout_ports
 
 # Input-only pads
-set clk_core_input_ports [get_ports { 
+set clk_core_input_ports [get_ports {
     rst_n_PAD
     input_PAD[*]
-}] 
-
+}]
 set_input_delay -min 0 -clock $clocks $clk_core_input_ports
 set_input_delay -max $input_delay_value -clock $clocks $clk_core_input_ports
 
@@ -79,4 +81,3 @@ if { [info exists ::env(OPENLANE_SDC_IDEAL_CLOCKS)] && $::env(OPENLANE_SDC_IDEAL
 } else {
     set_propagated_clock [all_clocks]
 }
-

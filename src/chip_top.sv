@@ -31,6 +31,7 @@ module chip_top #(
     // ============================================================
     wire clk_PAD2CORE;
     wire rst_n_PAD2CORE;
+    wire rst_n_sync;
 
     wire [NUM_BIDIR_PADS-1:0] bidir_PAD2CORE;
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD;
@@ -40,6 +41,10 @@ module chip_top #(
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_IE;
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PU;
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PD;
+
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_OE_raw;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PU_raw;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PD_raw;
 
     // ============================================================
     // Power / ground pad instances
@@ -104,6 +109,16 @@ module chip_top #(
         .PD     (1'b0)
     );
 
+    async_reset_sync u_rst_sync (
+        .clk        (clk_PAD2CORE),
+        .rst_n_async(rst_n_PAD2CORE),
+        .rst_n_sync (rst_n_sync)
+    );
+
+    assign bidir_CORE2PAD_OE = bidir_CORE2PAD_OE_raw & {NUM_BIDIR_PADS{rst_n_sync}};
+    assign bidir_CORE2PAD_PU = bidir_CORE2PAD_PU_raw & {NUM_BIDIR_PADS{rst_n_sync}};
+    assign bidir_CORE2PAD_PD = bidir_CORE2PAD_PD_raw & {NUM_BIDIR_PADS{rst_n_sync}};
+
     // Unified bidirectional pads
     generate
         for (genvar i = 0; i < NUM_BIDIR_PADS; i++) begin : bidir
@@ -138,7 +153,7 @@ module chip_top #(
         .NUM_BIDIR_PADS (NUM_BIDIR_PADS)
     ) i_chip_core (
         .clk        (clk_PAD2CORE),
-        .rst_n      (rst_n_PAD2CORE),
+        .rst_n      (rst_n_sync),
 `ifdef USE_POWER_PINS
         .VDD    (VDD),
         .VSS    (VSS),
@@ -146,12 +161,12 @@ module chip_top #(
 
         .bidir_in   (bidir_PAD2CORE),
         .bidir_out  (bidir_CORE2PAD),
-        .bidir_oe   (bidir_CORE2PAD_OE),
+        .bidir_oe   (bidir_CORE2PAD_OE_raw),
         .bidir_cs   (bidir_CORE2PAD_CS),
         .bidir_sl   (bidir_CORE2PAD_SL),
         .bidir_ie   (bidir_CORE2PAD_IE),
-        .bidir_pu   (bidir_CORE2PAD_PU),
-        .bidir_pd   (bidir_CORE2PAD_PD)
+        .bidir_pu   (bidir_CORE2PAD_PU_raw),
+        .bidir_pd   (bidir_CORE2PAD_PD_raw)
     );
 
     // ============================================================
