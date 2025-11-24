@@ -117,7 +117,7 @@ module interrupt_controller (
 
   end
 
-  always @(posedge clk or negedge resetn) begin
+  always @(posedge clk) begin
     if (!resetn) begin
       mip_next          <= 32'b0;
       IRQ_TO_CPU_CTRL1  <= 1'b0;
