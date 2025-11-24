@@ -90,9 +90,16 @@ module soc_fpga_top (
   assign gpio = gpio_oe ? gpio_out : 1'hz;
   assign gpio = gpio_in;
 
+  wire rst_n_sync;
+  async_reset_sync u_rst_sync (
+      .clk        (clk),
+      .rst_n_async(ext_resetn),
+      .rst_n_sync (rst_n_sync)
+  );
+
   soc #() u_soc (
       .clk_osc   (clk),
-      .ext_resetn(ext_resetn),
+      .ext_resetn(rst_n_sync),
 
       .uart_tx(uart_tx),
       .uart_rx(uart_rx),
