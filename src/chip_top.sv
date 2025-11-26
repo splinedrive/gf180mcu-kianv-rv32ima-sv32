@@ -3,14 +3,17 @@
 
 `default_nettype none
 
+`include "slot_defines.svh"
+
 module chip_top #(
     // Power/ground pads for core and I/O
-    parameter NUM_DVDD_PADS = 8,
-    parameter NUM_DVSS_PADS = 10,
+    parameter NUM_DVDD_PADS = `NUM_DVDD_PADS,
+    parameter NUM_DVSS_PADS = `NUM_DVSS_PADS,
 
-    // Unified bidirectional signal pads
-    // 54 used by chip_core
-    parameter NUM_BIDIR = 54
+    // Signal pads
+    parameter NUM_INPUT_PADS = `NUM_INPUT_PADS,
+    parameter NUM_BIDIR_PADS = `NUM_BIDIR_PADS,
+    parameter NUM_ANALOG_PADS = `NUM_ANALOG_PADS
     )(
     `ifdef USE_POWER_PINS
     inout  wire VDD,
@@ -20,7 +23,7 @@ module chip_top #(
     inout  wire       clk_PAD,
     inout  wire       rst_n_PAD,
 
-    inout  wire [NUM_BIDIR-1:0] bidir_PAD
+    inout  wire [NUM_BIDIR_PADS-1:0] bidir_PAD
 );
 
     // ============================================================
@@ -29,14 +32,14 @@ module chip_top #(
     wire clk_PAD2CORE;
     wire rst_n_PAD2CORE;
 
-    wire [NUM_BIDIR-1:0] bidir_PAD2CORE;
-    wire [NUM_BIDIR-1:0] bidir_CORE2PAD;
-    wire [NUM_BIDIR-1:0] bidir_CORE2PAD_OE;
-    wire [NUM_BIDIR-1:0] bidir_CORE2PAD_CS;
-    wire [NUM_BIDIR-1:0] bidir_CORE2PAD_SL;
-    wire [NUM_BIDIR-1:0] bidir_CORE2PAD_IE;
-    wire [NUM_BIDIR-1:0] bidir_CORE2PAD_PU;
-    wire [NUM_BIDIR-1:0] bidir_CORE2PAD_PD;
+    wire [NUM_BIDIR_PADS-1:0] bidir_PAD2CORE;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_OE;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_CS;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_SL;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_IE;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PU;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PD;
 
     // ============================================================
     // Power / ground pad instances
@@ -103,7 +106,7 @@ module chip_top #(
 
     // Unified bidirectional pads
     generate
-        for (genvar i = 0; i < NUM_BIDIR; i++) begin : bidir
+        for (genvar i = 0; i < NUM_BIDIR_PADS; i++) begin : bidir
             (* keep *)
             gf180mcu_fd_io__bi_24t pad (
                 `ifdef USE_POWER_PINS
@@ -132,7 +135,7 @@ module chip_top #(
     // Core instance
     // ============================================================
     chip_core #(
-        .NUM_BIDIR (NUM_BIDIR)
+        .NUM_BIDIR_PADS (NUM_BIDIR_PADS)
     ) i_chip_core (
         .clk        (clk_PAD2CORE),
         .rst_n      (rst_n_PAD2CORE),
@@ -165,7 +168,7 @@ module chip_top #(
 
     (* keep *)
     gf180mcu_ws_ip__names names ();
-    
+
     (* keep *)
     gf180mcu_ws_ip__credits credits ();
 

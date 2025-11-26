@@ -3,7 +3,7 @@
 `default_nettype none
 
 module chip_core #(
-    parameter NUM_BIDIR = 54  // unified bidirectional pads (53 used, 1 spare)
+    parameter NUM_BIDIR_PADS = 54  // unified bidirectional pads (53 used, 1 spare)
 )(
     input  logic clk,       // system clock
     input  logic rst_n,     // reset (active low)
@@ -12,14 +12,14 @@ module chip_core #(
      inout VSS,
 `endif
     // Unified bidirectional pad bus
-    input  wire  [NUM_BIDIR-1:0] bidir_in,
-    output wire  [NUM_BIDIR-1:0] bidir_out,
-    output wire  [NUM_BIDIR-1:0] bidir_oe,
-    output wire  [NUM_BIDIR-1:0] bidir_cs,
-    output wire  [NUM_BIDIR-1:0] bidir_sl,
-    output wire  [NUM_BIDIR-1:0] bidir_ie,
-    output wire  [NUM_BIDIR-1:0] bidir_pu,
-    output wire  [NUM_BIDIR-1:0] bidir_pd
+    input  wire  [NUM_BIDIR_PADS-1:0] bidir_in,
+    output wire  [NUM_BIDIR_PADS-1:0] bidir_out,
+    output wire  [NUM_BIDIR_PADS-1:0] bidir_oe,
+    output wire  [NUM_BIDIR_PADS-1:0] bidir_cs,
+    output wire  [NUM_BIDIR_PADS-1:0] bidir_sl,
+    output wire  [NUM_BIDIR_PADS-1:0] bidir_ie,
+    output wire  [NUM_BIDIR_PADS-1:0] bidir_pu,
+    output wire  [NUM_BIDIR_PADS-1:0] bidir_pd
 );
     // ============================================================
     // Pad Configuration Defaults (GF180 standard)
@@ -131,7 +131,7 @@ module chip_core #(
     // ============================================================
     // Output enable (OE) and input enable (IE)
     // ============================================================
-    logic [NUM_BIDIR-1:0] bidir_oe_i;
+    logic [NUM_BIDIR_PADS-1:0] bidir_oe_i;
     assign bidir_oe = bidir_oe_i;
 
     always_comb begin
