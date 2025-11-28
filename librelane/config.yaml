@@ -103,6 +103,7 @@ VERILOG_DEFINES:
   - "SLOT_1X1"
 # Enable plugin for better SystemVerilog support
 # USE_SLANG: True
+# SLANG_ARGUMENTS: ['--keep-hierarchy']
 
 # Slightly smaller file sizes
 PRIMARY_GDSII_STREAMOUT_TOOL: klayout
