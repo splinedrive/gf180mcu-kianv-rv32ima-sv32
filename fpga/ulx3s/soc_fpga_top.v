@@ -21,7 +21,6 @@
 `default_nettype none
 
 module soc_fpga_top (
-
     input wire clk_osc,
     input wire ext_resetn,
 
@@ -55,16 +54,8 @@ module soc_fpga_top (
 
     inout wire [8:8] gpio,
 
-`ifdef SOC_IS_ULX3S
-    output wire wifi_en,
-`endif
+    output wire wifi_en
 );
-
-  wire [15:0] sdram_dq_out;
-  wire [15:0] sdram_dq_in;
-  wire sdram_dq_oe;
-  assign sdram_dq    = sdram_dq_oe ? sdram_dq_out : 16'hzzzz;
-  assign sdram_dq_in = sdram_dq;
 
   wire clk;
   pll #(
@@ -82,19 +73,52 @@ module soc_fpga_top (
   );
   assign flash_clk = flash_sclk;
 
-  wire wifi_en = 1'b1;
-
-  wire gpio_out;
-  wire gpio_in;
-  wire gpio_oe;
-  assign gpio = gpio_oe ? gpio_out : 1'hz;
-  assign gpio = gpio_in;
+  assign wifi_en   = 1'b1;
 
   wire rst_n_sync;
   async_reset_sync u_rst_sync (
       .clk        (clk),
       .rst_n_async(ext_resetn),
       .rst_n_sync (rst_n_sync)
+  );
+
+  wire [15:0] sdram_dq_out;
+  wire [15:0] sdram_dq_in;
+
+  wire        sdram_dq_oe_raw;
+  wire        sdram_dq_oe;
+
+  assign sdram_dq_oe = sdram_dq_oe_raw & rst_n_sync;
+
+  genvar i;
+  generate
+    for (i = 0; i < 16; i = i + 1) begin : gen_sdram_dq
+      TRELLIS_IO #(
+          .DIR("BIDIR")
+      ) sdram_dq_iobuf (
+          .B(sdram_dq[i]),
+          .I(sdram_dq_out[i]),
+          .O(sdram_dq_in[i]),
+          .T(~sdram_dq_oe)
+      );
+    end
+  endgenerate
+
+  wire gpio_out;
+  wire gpio_in;
+
+  wire gpio_oe_raw;
+  wire gpio_oe;
+
+  assign gpio_oe = gpio_oe_raw & rst_n_sync;
+
+  TRELLIS_IO #(
+      .DIR("BIDIR")
+  ) gpio8_iobuf (
+      .B(gpio[8]),
+      .I(gpio_out),
+      .O(gpio_in),
+      .T(~gpio_oe)
   );
 
   soc #() u_soc (
@@ -120,7 +144,7 @@ module soc_fpga_top (
       .sdram_casn  (sdram_casn),
       .sdram_dq_in (sdram_dq_in),
       .sdram_dq_out(sdram_dq_out),
-      .sdram_dq_oe (sdram_dq_oe),
+      .sdram_dq_oe (sdram_dq_oe_raw),
 
       .spi_cen0         (spi_cen0),
       .spi_sclk0        (spi_sclk0),
@@ -134,8 +158,7 @@ module soc_fpga_top (
 
       .gpio_in (gpio_in),
       .gpio_out(gpio_out),
-      .gpio_oe (gpio_oe)
+      .gpio_oe (gpio_oe_raw)
   );
 
 endmodule
-
