@@ -77,27 +77,29 @@ module cache_sram_I$ #(
   wire write_sel_way0, write_sel_way1;
 
   sram_sp_gf180_512x56 u_mem_way0 (
-      .clk (clk),
-      .we  (write_sel_way0),
+      .clk   (clk),
+      .resetn(resetn),
+      .we    (write_sel_way0),
 `ifdef USE_POWER_PINS
-      .VDD (VDD),
-      .VSS (VSS),
+      .VDD   (VDD),
+      .VSS   (VSS),
 `endif
-      .addr(idx),
-      .din ({{PAD_BITS{1'b0}}, tag, wdata}),
-      .dout(packed_out0)
+      .addr  (idx),
+      .din   ({{PAD_BITS{1'b0}}, tag, wdata}),
+      .dout  (packed_out0)
   );
 
   sram_sp_gf180_512x56 u_mem_way1 (
-      .clk (clk),
-      .we  (write_sel_way1),
+      .clk   (clk),
+      .resetn(resetn),
+      .we    (write_sel_way1),
 `ifdef USE_POWER_PINS
-      .VDD (VDD),
-      .VSS (VSS),
+      .VDD   (VDD),
+      .VSS   (VSS),
 `endif
-      .addr(idx),
-      .din ({{PAD_BITS{1'b0}}, tag, wdata}),
-      .dout(packed_out1)
+      .addr  (idx),
+      .din   ({{PAD_BITS{1'b0}}, tag, wdata}),
+      .dout  (packed_out1)
   );
 
   localparam integer DATA_LO = 0;

@@ -70,15 +70,16 @@ module cache_sram_D$ #(
   wire [PACK_BITS-1:0] packed_out;
 
   sram_sp_gf180_512x56 u_mem (
-      .clk (clk),
-      .we  (we),
+      .clk   (clk),
+      .resetn(resetn),
+      .we    (we),
 `ifdef USE_POWER_PINS
-      .VDD (VDD),
-      .VSS (VSS),
+      .VDD   (VDD),
+      .VSS   (VSS),
 `endif
-      .addr(idx),
-      .din ({{PAD_BITS{1'b0}}, tag, wdata}),
-      .dout(packed_out)
+      .addr  (idx),
+      .din   ({{PAD_BITS{1'b0}}, tag, wdata}),
+      .dout  (packed_out)
   );
 
   localparam DATA_LO = 0;

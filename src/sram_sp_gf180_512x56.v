@@ -22,6 +22,7 @@
 
 module sram_sp_gf180_512x56 (
     input  wire        clk,
+    input  wire        resetn,
     input  wire        we,
 `ifdef USE_POWER_PINS
     inout              VDD,
@@ -46,13 +47,15 @@ module sram_sp_gf180_512x56 (
 
   wire we_this = we;
 
+  wire cen = resetn ? 1'b0 : 1'b1;
+
   gf180mcu_fd_ip_sram__sram512x8m8wm1_wrapper u_tile_0 (
 `ifdef USE_POWER_PINS
       .VDD (VDD),
       .VSS (VSS),
 `endif
       .CLK (clk),
-      .CEN (1'b0),
+      .CEN (cen),
       .GWEN(~we_this),
       .WEN (we_this ? 8'h00 : 8'hFF),
       .A   (row),
@@ -66,7 +69,7 @@ module sram_sp_gf180_512x56 (
       .VSS (VSS),
 `endif
       .CLK (clk),
-      .CEN (1'b0),
+      .CEN (cen),
       .GWEN(~we_this),
       .WEN (we_this ? 8'h00 : 8'hFF),
       .A   (row),
@@ -80,7 +83,7 @@ module sram_sp_gf180_512x56 (
       .VSS (VSS),
 `endif
       .CLK (clk),
-      .CEN (1'b0),
+      .CEN (cen),
       .GWEN(~we_this),
       .WEN (we_this ? 8'h00 : 8'hFF),
       .A   (row),
@@ -94,7 +97,7 @@ module sram_sp_gf180_512x56 (
       .VSS (VSS),
 `endif
       .CLK (clk),
-      .CEN (1'b0),
+      .CEN (cen),
       .GWEN(~we_this),
       .WEN (we_this ? 8'h00 : 8'hFF),
       .A   (row),
@@ -108,7 +111,7 @@ module sram_sp_gf180_512x56 (
       .VSS (VSS),
 `endif
       .CLK (clk),
-      .CEN (1'b0),
+      .CEN (cen),
       .GWEN(~we_this),
       .WEN (we_this ? 8'h00 : 8'hFF),
       .A   (row),
@@ -122,7 +125,7 @@ module sram_sp_gf180_512x56 (
       .VSS (VSS),
 `endif
       .CLK (clk),
-      .CEN (1'b0),
+      .CEN (cen),
       .GWEN(~we_this),
       .WEN (we_this ? 8'h00 : 8'hFF),
       .A   (row),
@@ -136,7 +139,7 @@ module sram_sp_gf180_512x56 (
       .VSS (VSS),
 `endif
       .CLK (clk),
-      .CEN (1'b0),
+      .CEN (cen),
       .GWEN(~we_this),
       .WEN (we_this ? 8'h00 : 8'hFF),
       .A   (row),
