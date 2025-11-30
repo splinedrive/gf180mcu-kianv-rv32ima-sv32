@@ -15,10 +15,10 @@ module chip_top #(
     parameter NUM_BIDIR_PADS = `NUM_BIDIR_PADS,
     parameter NUM_ANALOG_PADS = `NUM_ANALOG_PADS
     )(
-    `ifdef USE_POWER_PINS
+`ifdef USE_POWER_PINS
     inout  wire VDD,
     inout  wire VSS,
-    `endif
+`endif
 
     inout  wire       clk_PAD,
     inout  wire       rst_n_PAD,
@@ -35,16 +35,20 @@ module chip_top #(
 
     wire [NUM_BIDIR_PADS-1:0] bidir_PAD2CORE;
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD;
-    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_OE;
-    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_CS;
-    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_SL;
-    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_IE;
-    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PU;
-    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PD;
 
+    // rohe Steuer-Signale aus dem Core
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_OE_raw;
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PU_raw;
     wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PD_raw;
+
+    // nach Reset-Gating (in Pads verwendet)
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_OE;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PU;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_PD;
+
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_CS;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_SL;
+    wire [NUM_BIDIR_PADS-1:0] bidir_CORE2PAD_IE;
 
     // ============================================================
     // Power / ground pad instances
@@ -79,12 +83,12 @@ module chip_top #(
 
     // Clock pad: Schmitt trigger input
     gf180mcu_fd_io__in_s clk_pad (
-        `ifdef USE_POWER_PINS
+    `ifdef USE_POWER_PINS
         .DVDD   (VDD),
         .DVSS   (VSS),
         .VDD    (VDD),
         .VSS    (VSS),
-        `endif
+    `endif
 
         .Y      (clk_PAD2CORE),
         .PAD    (clk_PAD),
@@ -95,12 +99,12 @@ module chip_top #(
 
     // Reset pad: normal CMOS input
     gf180mcu_fd_io__in_c rst_n_pad (
-        `ifdef USE_POWER_PINS
+    `ifdef USE_POWER_PINS
         .DVDD   (VDD),
         .DVSS   (VSS),
         .VDD    (VDD),
         .VSS    (VSS),
-        `endif
+    `endif
 
         .Y      (rst_n_PAD2CORE),
         .PAD    (rst_n_PAD),
@@ -115,21 +119,39 @@ module chip_top #(
         .rst_n_sync (rst_n_sync)
     );
 
-    assign bidir_CORE2PAD_OE = bidir_CORE2PAD_OE_raw & {NUM_BIDIR_PADS{rst_n_sync}};
-    assign bidir_CORE2PAD_PU = bidir_CORE2PAD_PU_raw & {NUM_BIDIR_PADS{rst_n_sync}};
-    assign bidir_CORE2PAD_PD = bidir_CORE2PAD_PD_raw & {NUM_BIDIR_PADS{rst_n_sync}};
+    generate
+        for (genvar i = 0; i < NUM_BIDIR_PADS; i++) begin : rst_gate
+            wire oe_and_rst = bidir_CORE2PAD_OE_raw[i] & rst_n_sync;
+            wire pu_and_rst = bidir_CORE2PAD_PU_raw[i] & rst_n_sync;
+            wire pd_and_rst = bidir_CORE2PAD_PD_raw[i] & rst_n_sync;
 
-    // Unified bidirectional pads
+            falsepath_anchor u_oe (
+                .i (oe_and_rst),
+                .z (bidir_CORE2PAD_OE[i])
+            );
+
+            falsepath_anchor u_pu (
+                .i (pu_and_rst),
+                .z (bidir_CORE2PAD_PU[i])
+            );
+
+            falsepath_anchor u_pd (
+                .i (pd_and_rst),
+                .z (bidir_CORE2PAD_PD[i])
+            );
+        end
+    endgenerate
+
     generate
         for (genvar i = 0; i < NUM_BIDIR_PADS; i++) begin : bidir
             (* keep *)
             gf180mcu_fd_io__bi_24t pad (
-                `ifdef USE_POWER_PINS
+            `ifdef USE_POWER_PINS
                 .DVDD   (VDD),
                 .DVSS   (VSS),
                 .VDD    (VDD),
                 .VSS    (VSS),
-                `endif
+            `endif
 
                 .A      (bidir_CORE2PAD[i]),
                 .OE     (bidir_CORE2PAD_OE[i]),
@@ -154,10 +176,10 @@ module chip_top #(
     ) i_chip_core (
         .clk        (clk_PAD2CORE),
         .rst_n      (rst_n_sync),
-`ifdef USE_POWER_PINS
-        .VDD    (VDD),
-        .VSS    (VSS),
-`endif
+    `ifdef USE_POWER_PINS
+        .VDD        (VDD),
+        .VSS        (VSS),
+    `endif
 
         .bidir_in   (bidir_PAD2CORE),
         .bidir_out  (bidir_CORE2PAD),
@@ -187,6 +209,18 @@ module chip_top #(
     (* keep *)
     gf180mcu_ws_ip__credits credits ();
 
+endmodule
+
+// RISCBoy-180 style
+module falsepath_anchor (
+    input  wire i,
+    output wire z
+);
+    (* keep *)
+    gf180mcu_fd_sc_mcu9t5v0__clkbuf_1 magic_falsepath_anchor_u (
+        .I (i),
+        .Z (z)
+    );
 endmodule
 
 `default_nettype wire
