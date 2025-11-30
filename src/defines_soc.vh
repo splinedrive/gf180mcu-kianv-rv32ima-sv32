@@ -35,7 +35,7 @@
 // Simulation-only configuration
 // ============================================================================
 `ifdef SIM
-  `define SYSTEM_CLK 50_000_000
+  `define SYSTEM_CLK 20_000_000
   `define NUM_ENTRIES_ITLB 32
   `define NUM_ENTRIES_DTLB 32
 `endif
