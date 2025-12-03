@@ -62,6 +62,7 @@ module associative_cache #(
   generate
     for (w = 0; w < WAYS; w = w + 1) begin : GEN_HIT
       assign way_hit[w] =
+        valid_i &&
         val_ram[set_idx][w] &&
         (vpn_ram[set_idx][w]  == vpn_i) &&
         ( g_ram[set_idx][w] || (asid_ram[set_idx][w] == asid_i) );
