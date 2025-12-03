@@ -25,7 +25,7 @@ all: ${PROJ}.bit
 # Synthesis: Generate the JSON file
 ${PROJ}.json: $(SRCS)
 	yosys $(DEFINES) -DSYSTEM_CLK=${SYSTEM_FREQUENCY} -p \
-        "synth_ecp5 -abc9 -json $@ -top ${PROJ}" $^
+        "synth_ecp5 -nolutram -abc9 -json $@ -top ${PROJ}" $^
 
 # Place and route: Generate the config file
 ${PROJ}_out.config: ${PROJ}.json
