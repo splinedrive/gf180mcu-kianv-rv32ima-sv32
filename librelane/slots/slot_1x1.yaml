@@ -4,9 +4,9 @@ FP_SIZING: absolute
 # for the sealring on all sides
 DIE_AREA: [0, 0, 3932, 5122]
 CORE_AREA: [442, 442, 3490, 4680]
-
 STD_CELL_LIBRARY: gf180mcu_fd_sc_mcu9t5v0
-#VERILOG_DEFINES: ["SLOT_1X1"]
+
+VERILOG_DEFINES: ["SLOT_1X1"]
 
 # Specify the pad instances for the padring
 PAD_SOUTH: [
@@ -61,6 +61,8 @@ PAD_EAST: [
 ]
 
 PAD_NORTH: [
+    "bidir\\[41\\].pad",
+    "bidir\\[40\\].pad",
     "bidir\\[39\\].pad",
     "bidir\\[38\\].pad",
     "bidir\\[37\\].pad",
@@ -79,6 +81,7 @@ PAD_NORTH: [
     "bidir\\[27\\].pad",
     "bidir\\[26\\].pad"
 ]
+
 
 PAD_WEST: [
     "dvdd_pads\\[7\\].pad",
@@ -105,10 +108,5 @@ PAD_WEST: [
     "dvss_pads\\[6\\].pad",
 
     "bidir\\[43\\].pad",
-    "bidir\\[42\\].pad",
-
-    "bidir\\[41\\].pad",
-    "bidir\\[40\\].pad"
+    "bidir\\[42\\].pad"
 ]
-
-
